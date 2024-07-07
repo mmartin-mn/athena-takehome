@@ -111,11 +111,14 @@ const PrimaryButton = styled.button`
   margin-left: 40px;
 `
 
+const SOCIAL_SECURITY_RETIRE_AGE = 67
+const SOCIAL_SECURITY_INCOME = 18000
+
 export const SocialSecurityAgedCard = () => {
   const [userData, setUserData] = useState<UserData>()
   const [options, setOptions] = useState<Options>()
   const [selectedUser, setSelectedUser] = useState<UserData>()
-
+  const [idealRetireAge, setIdealRetireAge] = useState<number>()
 
   useEffect(() => {
     const getData = async () => {
@@ -135,6 +138,63 @@ export const SocialSecurityAgedCard = () => {
     }
   }, [userData])
 
+  useEffect(() => {
+    if (!!selectedUser) {
+      const targetIncome = selectedUser.user_info.household_income * (selectedUser.assumptions.pre_retirement_income_percent / 100)
+
+      // Rounding to nearest cent
+      const savingsAmountPerYear = +(selectedUser.user_info.household_income * (selectedUser.user_info.current_savings_rate / 100)).toFixed(2)
+
+      // Get age, not going to use a package because this is a pretty easy conversion
+      const birthday = new Date(selectedUser.user_info.date_of_birth).getTime()
+      const now = new Date().getTime()
+      const diff = now - birthday
+      let age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365))
+
+      let savingsSum = selectedUser.user_info.current_retirement_savings
+      const rate = 1 + (selectedUser.assumptions.expected_rate_of_return / 100)
+
+      let canRetireReturn = false
+      do {
+        canRetireReturn = canRetire(age, targetIncome, savingsSum, selectedUser.assumptions.life_expectancy)
+        age++
+        savingsSum += savingsAmountPerYear
+        savingsSum *= rate
+        savingsSum = +savingsSum.toFixed(2)
+      } while(!canRetireReturn)
+
+      setIdealRetireAge(age)
+    }
+  }, [selectedUser])
+
+  const canRetire = (age: number, targetIncome: number, totalSavings: number, lifeExpentancy: number) => {
+    // This variable name is unfortunate lol, but how many years they are going to be alive in retirement
+    const yearsAlive = lifeExpentancy - age
+
+    // The amount of money they need total to retire at the current age
+    let totalIncomeSum = targetIncome * yearsAlive
+
+    // Calculating how much they get from social security
+    let socialSecurityIncomeYears = yearsAlive
+    if (age < SOCIAL_SECURITY_RETIRE_AGE) {
+      const difference = lifeExpentancy - SOCIAL_SECURITY_RETIRE_AGE
+      socialSecurityIncomeYears -= difference
+    }
+    const socialSecurityIncomeSum = SOCIAL_SECURITY_INCOME * socialSecurityIncomeYears
+
+
+    // Subtracting social secuirty from the total amount they need to have saved
+    totalIncomeSum -= socialSecurityIncomeSum
+
+    // If somehow their social security fully covered their retirement goal, return true
+    if (totalIncomeSum <= 0) {
+      return true
+    }
+
+    // If their savings is more than the amount they need to save, return true
+    return totalSavings >= totalIncomeSum
+  }
+
   return (
     <Container>
       <Header>Best Social Security Claimed Age</Header>
@@ -152,7 +212,7 @@ export const SocialSecurityAgedCard = () => {
           <IdealContainer>
             <div style={{ width: '150px', display: 'flex', flexDirection: 'column', marginRight: '10px' }}>
               <Text>Your ideal retire age</Text>
-              <AgeInput type="number" />
+              <AgeInput type="number" value={idealRetireAge} onChange={(event) => setIdealRetireAge(+event.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Text>Annual Social Security Payment</Text>
@@ -160,7 +220,7 @@ export const SocialSecurityAgedCard = () => {
             </div>
           </IdealContainer>
           <div style={{ marginTop: '20px', display: 'flex', width: '100%', justifyContent: 'center' }}>
-            <SecondaryButton>Use ideal 63</SecondaryButton>
+            <SecondaryButton>Use ideal {idealRetireAge}</SecondaryButton>
             <PrimaryButton>Accept {selectedUser?.assumptions.retirement_age}</PrimaryButton>
           </div>
         </>

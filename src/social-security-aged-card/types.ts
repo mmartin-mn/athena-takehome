@@ -4,7 +4,7 @@ type UserInfo = {
   current_savings_rate: number;
   date_of_birth: string;
   full_name: string;
-  household_income: string;
+  household_income: number;
 };
 
 type Assumptions = {
