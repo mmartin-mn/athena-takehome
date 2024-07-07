@@ -1,6 +1,8 @@
 # Decisions
 
 1. I've decided to use create react app with typescript. It's easy to set up and I've used it before so I'm comfortable with it. The readme for create react app is still found below.
+2. Styled components for css management, no real reason other than that's what I'm using now at my current job.
+3. React select for select component, because you guys said I could use a component here and the time to make the HTML select styled like what's in figma is longer than I'd want to spend on it.
 
 # Getting Started with Create React App
 
