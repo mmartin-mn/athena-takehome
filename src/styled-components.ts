@@ -1,6 +1,13 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
+export const AppContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+`;
+
+export const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 420px;
@@ -116,6 +123,7 @@ export const ChartContainer = styled.div`
   justify-content: center;
   width: 300px;
 `;
+
 export const IncomeContainer = styled.div`
   position: absolute;
   width: 200px;
@@ -130,4 +138,18 @@ export const IncomeTitle = styled.p`
   font-size: 12px;
   line-height: 20px;
   font-weight: normal;
+`;
+
+export const Table = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const Row = styled.div`
+  display: flex;
+`;
+
+export const TableItem = styled.div`
+  width: 150px;
 `;

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import 'chart.js/auto';
 import Select from 'react-select';
 import { Doughnut } from 'react-chartjs-2';
-import { Options, UserData } from './types';
-import { dollarFormatter } from './utils';
-import { AgeInput, ChartContainer, Container, Divider, Header, HouseholdContainer, IdealContainer, IncomeContainer, IncomeTitle, PaymentText, PrimaryButton, SecondaryButton, SubHeader, Text } from './styled-components';
+import { Options, UserData } from '../types';
+import { dollarFormatter } from '../utils';
+import { AgeInput, ChartContainer, CardContainer, Divider, Header, HouseholdContainer, IdealContainer, IncomeContainer, IncomeTitle, PaymentText, PrimaryButton, SecondaryButton, SubHeader, Text } from '../styled-components';
 
 const SOCIAL_SECURITY_RETIRE_AGE = 67
 const SOCIAL_SECURITY_INCOME = 18000
@@ -119,7 +119,7 @@ export const SocialSecurityAgedCard = () => {
   }
 
   return (
-    <Container>
+    <CardContainer>
       <Header>Best Social Security Claimed Age</Header>
       <SubHeader>Our Recommendation</SubHeader>
       {!!selectedUser && !!yearlyIncome && 
@@ -152,7 +152,7 @@ export const SocialSecurityAgedCard = () => {
           <IdealContainer>
             <div style={{ width: '150px', display: 'flex', flexDirection: 'column', marginRight: '10px' }}>
               <Text>Your ideal retire age</Text>
-              <AgeInput type="number" value={idealRetireAge} onChange={(event) => setIdealRetireAge(+event.target.value)} />
+              <AgeInput type="number" value={idealRetireAge || ''} onChange={(event) => setIdealRetireAge(+event.target.value)} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Text>Annual Social Security Payment</Text>
@@ -165,6 +165,6 @@ export const SocialSecurityAgedCard = () => {
           </div>
         </>
       }
-    </Container>
+    </CardContainer>
   );
 }
